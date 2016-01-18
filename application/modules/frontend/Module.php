@@ -7,6 +7,8 @@ use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\ModuleDefinitionInterface as CreateModule;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
+use Phalcon\Config\Adapter\Ini as ConfigInt;
+
 //use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
 
 class Module implements CreateModule {
@@ -15,15 +17,21 @@ class Module implements CreateModule {
     private $layoutName;
     private $themeName;
     
+    private $config; // ดึงข้อมูล Config จากไฟล์ commons/config/main.ini
+    
     /* ==================================================
      * ลงทะเบียน Module auto-loader
      * Registers the module auto-loader
      * ================================================== */
     
+    // ทำงานอัตโนมัติ
+    public function __construct() {
+        $this->config = new ConfigInt(APPLICATION_PATH . '/commons/config/main.ini');  // auto read config
+        $this->layoutName = $this->config->module->layoutDefault;
+        $this->themeName  = $this->config->module->themeDefault;
+    }
+    
     public function registerAutoloaders(\Phalcon\DiInterface $manager = NULL){
-        
-        $this->layoutName = !empty($this->layoutName) ? $this->layoutName : $manager->get('config')->module->layoutDefault;
-        $this->themeName  = !empty($this->themeName) ? $this->themeName : $manager->get('config')->module->themeDefault;
         
         $loader = new Loader();
         $loader->registerNamespaces(array(
@@ -68,16 +76,18 @@ class Module implements CreateModule {
          * Setting up the view component
          * ================================================== */
         
-        $manager->set('view', function () use ($theme,$manager) {
+        $manager->set('view', function () use ($theme) {
             $view = new View();
             $view->setViewsDir(__DIR__ . '/views/');
-            $view->setLayoutsDir($manager->get('config')->theme->themesDir . $manager->get('config')->theme->$theme);
+            $view->setLayoutsDir($this->config->theme->$theme);
             $view->setTemplateAfter('layouts/' . $this->layoutName);
+            $cacheDir = APPLICATION_PATH . $this->config->application->cacheDir . "/{$this->moduleName}/";
+            if (!is_dir($cacheDir)) { mkdir($cacheDir); }
             $view->registerEngines(array(
                 '.phtml' => function ($view, $di){
                     $volt = new VoltEngine($view, $di);
                     $volt->setOptions(array(
-                        'compiledPath' => APPLICATION_PATH . $di->get('config')->application->cacheDir . "/{$this->moduleName}/",
+                        'compiledPath' => APPLICATION_PATH . $this->config->application->cacheDir . "/{$this->moduleName}/",
                         'compiledSeparator' => '_'
                     ));
                     return $volt;

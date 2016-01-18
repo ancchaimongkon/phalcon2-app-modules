@@ -37,6 +37,4 @@ class ExampleRouter extends Group {
         
     }
     
-    
-    
 }
