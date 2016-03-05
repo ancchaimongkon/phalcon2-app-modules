@@ -20,7 +20,7 @@ $manager->set('router', function() use ($config){
     $addModule = explode(',',$config->module->moduleLists);
     
     foreach ($addModule as $module) {
-        $pathModule = APPLICATION_PATH . '/modules/' . $module . '/Router.php';
+        $pathModule = sprintf('%s/modules/%s/Router.php', APPLICATION_PATH, $module);
         $nameModule = ucfirst($module) . 'Router';
         if(file_exists($pathModule)){
             include_once $pathModule;

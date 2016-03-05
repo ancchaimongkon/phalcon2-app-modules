@@ -2,19 +2,19 @@
 
 namespace Multiple\Plugins;
 
-use Phalcon\Acl;
-use Phalcon\Acl\Role;
-use Phalcon\Acl\Resource;
-use Phalcon\Events\Event;
-use Phalcon\Mvc\User\Plugin;
-use Phalcon\Mvc\Dispatcher;
-use Phalcon\Acl\Adapter\Memory as AclList;
-use Phalcon\Acl\Resource as AclResource;
+use Phalcon\Acl,
+    Phalcon\Acl\Role,
+    Phalcon\Acl\Resource,
+    Phalcon\Events\Event,
+    Phalcon\Mvc\User\Plugin,
+    Phalcon\Mvc\Dispatcher,
+    Phalcon\Acl\Adapter\Memory as AclList,
+    CBaseSystem as BaseComponent;    
+// use Phalcon\Acl\Resource as AclResource;
 
-/**
- * SecurityPlugin
+/* =======================================================
  * ระบบกำหนดสิทธิ์การเข้าถึงข้อมูล
- */
+ * ======================================================= */
 
 class SecurityPlugin extends Plugin {
         
@@ -25,67 +25,53 @@ class SecurityPlugin extends Plugin {
     private $acl;
     private $_roles;
 
-    // ข้อมูล "บทบาทหน้าที่"
-    /*
-     * บทบาทหน้าที่
-     * แบ่งเป็น 4 ระดับ
-     * -- 1. ระดับ Super Admin หัวหน้าผู้ดูแลระบบ
-     * -- 2. ระดับ Admin ผู้ดูแลระบบ
-     * -- 3. ระดับ Vip สมาชิกพิเศษ
-     * -- 4. ระดับ Member สมาชิก
-     * -- 5. ระดับ Guests ผู้ใช้ทั่วไป
-     */
-    
+    /* ====================== บทบาทหน้าที่ ======================
+     * - ระดับ Admin ผู้ดูแลระบบ
+     * - ระดับ Member สมาชิก
+     * - ระดับ Guest ผู้ใช้ทั่วไป
+     * ======================================================= */
+
     private $roles = array(
-        'superadmin'    => 'SuperAdmin',
-        'admin'         => 'Admins',
-        'vip'           => 'Vips',
-        'members'       => 'Members',
-        'guests'        => 'Guests',
+        'admin'  => 'Admin',  // ผู้ดูแลระบบ
+        'member' => 'Member', // สมาชิก
+        'guest'  => 'Guest',  // ผู้ใช้ทั่วไป
     );
 
     private $arrAcl = array(
+        
         'frontend' => array(
-            'SuperAdmin' => array(),
-            'Admins' => array(),
-            'Vips' => array(),
-            'Members' => array(),
-            'Guests' => array(
-                'main'    => array('index'),
+            'Admin' => array(),
+            'Member' => array(),
+            'Guest' => array(
+                'main' => array('index'),
             ),
         ),
-        /*
-        'moduleName' => array(
-            'roleName' => array(
-                'controllerName' => array('actionName','actionName'),
-                'controllerName' => array('actionName','actionName'),
-            ),
-            'Admins' => array(),
-            'Vips' => array(),
-            'Members' => array(),
-            'Guests' => array(),
-        ),
-        */
+        
+        /**
+         * 'moduleName' => array(
+         *   'roleName' => array(
+         *     'controllerName' => array('actionName','actionName'),
+         *     'controllerName' => array('actionName','actionName'),
+         *   ),
+         * ),
+         **/
+        
     );
     
-    // เปิด / ปิด ระบบกำหนดสิทธิ์การเข้าถึง
+    /* เปิด / ปิด ระบบกำหนดสิทธิ์การเข้าถึง */
     public function __construct() {
-        $baseSystem = new \CBaseSystem();
+        $baseSystem = new BaseComponent();
         $this->_status = $baseSystem->securityStart;
     }
     
-    // เปิด / ปิด ระบบอัพเดทตลอดเวลา
+    /* เปิด / ปิด ระบบอัพเดทตลอดเวลา */
     public function setModule($module = 'frontend') {
         if(!empty($module)){
             $this->_module = $module;
         }
     }
 
-    /**
-     * Returns an existing or new access control list
-     * @returns AclList
-     */
-    
+    /* New access control list */
     public function getAcl(){
         
         if (!isset($this->persistent->acl) || !empty($this->_enable)) {
@@ -95,7 +81,7 @@ class SecurityPlugin extends Plugin {
              
             // ดึงข้อมูล "บทบาทหน้าที่" 
             foreach ($this->roles as $roleKey => $roleName) {
-                // ext. $roles['superadmin'] = new Role('SuperAdmin');
+                // ext. $roles['admin'] = new Role('Admin');
                 $roles[$roleKey] = new Role($roleName);
             }
             $this->_roles = $roles;
@@ -105,121 +91,105 @@ class SecurityPlugin extends Plugin {
                 $this->acl->addRole($role);
             }
             
-            // หัวหน้าผู้ดูแลระบบ
-            $this->setRoleSuperAdmin();
-            
             // ผู้ดูแลระบบ
             $this->setRoleAdmins();
-            
-            // สมาชิกพิเศษ
-            $this->setRoleVips();
             
             // สมาชิก
             $this->setRoleMembers();
             
-            // พื้นฐาน
-            // $this->setRoleUser();
-            
             // ทั่วไป
-            $this->setRolePublic();
+            $this->setRoleGuest();
             
-            //The acl is stored in session, APC would be useful here too
             $this->persistent->acl = $this->acl;
+            
         }
         
         return $this->persistent->acl;
+        
     }
-    private function setRoleSuperAdmin(){
-        // หัวหน้าผู้ดูแลระบบ
-        if(!empty($this->arrAcl[$this->_module]['SuperAdmin'])){
-            $privateResources = $this->arrAcl[$this->_module]['SuperAdmin'];
-            foreach ($privateResources as $resource => $actions) {
-                $this->acl->addResource(new Resource($resource), $actions);
-            }
-            // Setting Role Super Admin
-            foreach ($privateResources as $resource => $actions) {
-                foreach ($actions as $action){
-                    $this->acl->allow('SuperAdmin', $resource, $action);
-                }
-            }
-        }
-    }
+    
     private function setRoleAdmins(){
+        
         // ผู้ดูแลระบบ
-        if(!empty($this->arrAcl[$this->_module]['Admins'])){
-            $adminResources = $this->arrAcl[$this->_module]['Admins'];
+        if(!empty($this->arrAcl[$this->_module]['Admin'])){
+            
+            $adminResources = $this->arrAcl[$this->_module]['Admin'];
             foreach ($adminResources as $resource => $actions) {
                 $this->acl->addResource(new Resource($resource), $actions);
             }
-            // Setting Role Super Admin
+            
+            // Setting Role Admin
             foreach ($adminResources as $resource => $actions) {
                 foreach ($actions as $action){
-                    $this->acl->allow('Admins', $resource, $action);
+                    $this->acl->allow('Admin', $resource, $action);
                 }
             }
+            
         }
+        
     }
-    private function setRoleVips(){
-        // สมาชิกพิเศษ
-        if(!empty($this->arrAcl[$this->_module]['Vips'])){
-            $vipResources = $this->arrAcl[$this->_module]['Vips'];
-            foreach ($vipResources as $resource => $actions) {
-                $this->acl->addResource(new Resource($resource), $actions);
-            }
-            // Setting Role Super Admin
-            foreach ($vipResources as $resource => $actions) {
-                foreach ($actions as $action){
-                    $this->acl->allow('Vips', $resource, $action);
-                }
-            }
-        }
-    }
+    
     private function setRoleMembers(){
+        
         // สมาชิก
-        if(!empty($this->arrAcl[$this->_module]['Members'])){
-            $memberResources = $this->arrAcl[$this->_module]['Members'];
+        if(!empty($this->arrAcl[$this->_module]['Member'])){
+            
+            $memberResources = $this->arrAcl[$this->_module]['Member'];
             foreach ($memberResources as $resource => $actions) {
                 $this->acl->addResource(new Resource($resource), $actions);
             }
-            // Setting Role Super Admin
+            
+            // Setting Role Member
             foreach ($memberResources as $resource => $actions) {
                 foreach ($actions as $action){
-                    $this->acl->allow('Members', $resource, $action);
+                    $this->acl->allow('Member', $resource, $action);
                 }
             }
+            
         }
+        
     }
-    private function setRolePublic(){
+    
+    private function setRoleGuest(){
+        
         // ทั่วไป
-        if(!empty($this->arrAcl[$this->_module]['Guests'])){
-            $publicResources = $this->arrAcl[$this->_module]['Guests'];
-            foreach ($publicResources as $resource => $actions) {
+        if(!empty($this->arrAcl[$this->_module]['Guest'])){
+            
+            $guestResources = $this->arrAcl[$this->_module]['Guest'];
+            foreach ($guestResources as $resource => $actions) {
                 $this->acl->addResource(new Resource($resource), $actions);
             }
-            // Grant access to public areas to both users and guests
+            
+            // Setting Role Public
             foreach ($this->_roles as $role) {
-                foreach ($publicResources as $resource => $actions) {
+                foreach ($guestResources as $resource => $actions) {
                     foreach ($actions as $action){
                         $this->acl->allow($role->getName(), $resource, $action);
                     }
                 }
             }
+            
         }
+        
     }
     
     public function beforeDispatch(Event $event, Dispatcher $dispatcher){
         
         if($this->_status){
+            
             $auth = $this->session->get('auth');
-            if (!$auth){
-                $role = 'Guests';
-            }else{
+            
+            if (!$auth) {
+                $role = 'Guest'; /* บทบาทเริ่มต้น */
+            } else {
                 $role = $auth['role'];
             }
-            $controller     = $dispatcher->getControllerName();
-            $action         = $dispatcher->getActionName();
-            $acl            = $this->getAcl();
-            $allowed        = $acl->isAllowed($role, $controller, $action);
+            
+            $controller = $dispatcher->getControllerName();
+            $action     = $dispatcher->getActionName();
+            $acl        = $this->getAcl();
+            $allowed    = $acl->isAllowed($role, $controller, $action);
+            
             if ($allowed != Acl::ALLOW) {
                
                 /*
@@ -238,8 +208,10 @@ class SecurityPlugin extends Plugin {
                 exit();
                 
                 return false;
+                
             }
-        }else{
+            
+        } else {
             return true;
         }
         
