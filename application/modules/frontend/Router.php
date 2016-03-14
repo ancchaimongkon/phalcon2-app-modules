@@ -23,13 +23,44 @@ class FrontendRouter extends Group {
         
         $this->setPrefix('/' . $this->moduleDefault);
          
-        $this->add('', array(
+        $this->add('/:controller/:action/:params', array(
+            'module'        => $this->moduleDefault,
+            'controller'    => 1,
+            'action'        => 2,
+            'params'        => 3
+        ));
+        
+        $this->add('/:controller/:action/', array(
+            'module'        => $this->moduleDefault,
+            'controller'    => 1,
+            'action'        => 2
+        ));
+        
+        $this->add('/:controller/:action', array(
+            'module'        => $this->moduleDefault,
+            'controller'    => 1,
+            'action'        => 2
+        ));
+        
+        $this->add('/:controller/', array(
+            'module'        => $this->moduleDefault,
+            'controller'    => 1,
+            'action'        => $this->actionDefault
+        ));
+        
+        $this->add('/:controller', array(
+            'module'        => $this->moduleDefault,
+            'controller'    => 1,
+            'action'        => $this->actionDefault
+        ));
+        
+        $this->add('/', array(
             'module'        => $this->moduleDefault,
             'controller'    => $this->controllerDefault,
             'action'        => $this->actionDefault
         ));
-
-        $this->add('/', array(
+        
+        $this->add('', array(
             'module'        => $this->moduleDefault,
             'controller'    => $this->controllerDefault,
             'action'        => $this->actionDefault
