@@ -36,8 +36,8 @@ class Module implements CreateModule {
         $loader = new Loader();
         $loader->registerNamespaces(array(
             ucfirst($this->moduleName) . '\Controllers'     =>  __DIR__ . '/controllers/',
-            'Multiple\Components'                           =>  APPLICATION_PATH . $this->config->application->componentsDir,
-            'Multiple\Plugins'                              =>  APPLICATION_PATH . $this->config->application->pluginsDir,
+            'Multiple\Components'                           =>  APPLICATION_PATH . '/' . $this->config->application->componentsDir,
+            'Multiple\Plugins'                              =>  APPLICATION_PATH . '/' . $this->config->application->pluginsDir,
         ));
         $loader->register();
         
