@@ -1,24 +1,18 @@
 <?php
 
-namespace Dashboard;
+namespace Api;
 
 use Phalcon\Loader,
     Phalcon\Mvc\Dispatcher,
     Phalcon\Mvc\View,
     Phalcon\Mvc\ModuleDefinitionInterface as CreateModule,
-    Phalcon\Mvc\View\Engine\Volt as VoltEngine,
     Phalcon\Config\Adapter\Ini as ConfigInt;
 
-use Multiple\Plugins\SecurityPlugin as SecurityPlugin,
-    Multiple\Librarys\Cache,
-    Multiple\Widgets\AdminLTE_Nav as Nav;
+use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
 
 class Module implements CreateModule {
     
-    private $moduleName = 'dashboard';
-    private $layoutName;
-    private $themeName;
-    
+    private $moduleName = 'Api';
     private $config; 
     
     /* ==================================================
@@ -29,8 +23,6 @@ class Module implements CreateModule {
     // ทำงานอัตโนมัติ
     public function __construct() {
         $this->config = new ConfigInt(APPLICATION_PATH . '/commons/config.ini');  // auto read config
-        $this->layoutName = $this->config->module->layoutDefault;
-        $this->themeName  = $this->config->module->themeDefault;
     }
     
     public function registerAutoloaders(\Phalcon\DiInterface $manager = NULL){
@@ -42,19 +34,8 @@ class Module implements CreateModule {
             'Multiple\Models'                               =>  APPLICATION_PATH . '/' . $this->config->application->modelsDir,
             'Multiple\Plugins'                              =>  APPLICATION_PATH . '/' . $this->config->application->pluginsDir,
             'Multiple\Librarys'                             =>  APPLICATION_PATH . '/' . $this->config->application->libraryDir,
-            'Multiple\Widgets'                              =>  APPLICATION_PATH . '/' . $this->config->application->widgetDir,
         ));
-        
         $loader->register();
-        
-        $manager->set('cache', function (){
-            return new Cache();
-        });
-        $manager->set('adminlte', function (){
-            $objClass = new \stdClass();
-            $objClass->nav = new Nav();
-            return $objClass;
-        });
         
         $manager->set('logger', function (){
             $monthNow = date('Y-m-d',time());
@@ -76,7 +57,7 @@ class Module implements CreateModule {
         $this->setSecurity($manager);
         
         // การแสดงผล
-        $this->setView($manager,$this->themeName);
+        $this->setView($manager);
         
     }
     
@@ -84,37 +65,16 @@ class Module implements CreateModule {
      * ตั้งค่าการแสดงผล, ความปลอดภัย 
      * ================================================== */ 
     
-    private function setView($manager,$theme){
+    private function setView($manager){
         
         /* ==================================================
          * ตั้งค่าเรียกใช้งานไฟล์ View ทั้งหมด
-         * Setting up the view component
          * ================================================== */
         
-        $manager->set('view', function () use ($theme) {
-            
+        $manager->set('view', function () {
             $view = new View();
-            $view->setViewsDir(__DIR__ . '/views/'); /* ตำแหน่งเก็บไฟล์ views ทั้งหมด */
-            $view->setLayoutsDir(sprintf('%s/%s/', $this->config->theme->themesDir, $theme)); /* ตำแหน่งเก็บไฟล์ layouts ทั้งหมด */
-            $view->setTemplateAfter('layouts/' . $this->layoutName); /* เลือกไฟล์ layout เริ่มต้น*/
-            
-            /* สร้างโฟล์เดอร์เก็บไฟล์ cache */
-            $cacheDir = sprintf('%s/%s/%s/', APPLICATION_PATH, $this->config->application->cacheDir, $this->moduleName);
-            if (!is_dir($cacheDir)) { mkdir($cacheDir); }
-            
-            $view->registerEngines(array(
-                '.phtml' => function ($view, $di){
-                    $volt = new VoltEngine($view, $di);
-                    $volt->setOptions(array(
-                        'compiledPath' => sprintf('%s/%s/%s/', APPLICATION_PATH, $this->config->application->cacheDir, $this->moduleName),
-                        'compiledSeparator' => '_'
-                    ));
-                    return $volt;
-                },
-            ));
-                
+            $view->disable();
             return $view;
-            
         });
         
     }

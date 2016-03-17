@@ -2,12 +2,11 @@
 
 namespace Example;
 
-use Phalcon\Loader;
-use Phalcon\Mvc\Dispatcher;
-use Phalcon\Mvc\View;
-use Phalcon\Mvc\ModuleDefinitionInterface as CreateModule;
-use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
-use Phalcon\Config\Adapter\Ini as ConfigInt;
+use Phalcon\Loader,
+    Phalcon\Mvc\Dispatcher,
+    Phalcon\Mvc\View,
+    Phalcon\Mvc\ModuleDefinitionInterface as CreateModule,
+    Phalcon\Config\Adapter\Ini as ConfigInt;
 
 use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
 
