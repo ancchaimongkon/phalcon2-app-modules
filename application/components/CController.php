@@ -24,9 +24,6 @@ class CController extends Controller {
     /* [Auto] เรียกใช้งาน assets Manager เมื่อมีการใช้งานไฟล์ Controller */
     protected function setAssetsBase(){
         
-        $this->assets->collection('cssHeader')
-            ->addCss($this->getPathAssets('/assets/cyber/style/cyber-build.css'));
-        
         $this->assets->collection('jsFooter')
             ->addJs($this->getPathAssets('/vendor/jquery/2.1.4/jquery.min.js'));
         
