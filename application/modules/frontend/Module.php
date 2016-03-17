@@ -9,7 +9,7 @@ use Phalcon\Mvc\ModuleDefinitionInterface as CreateModule;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Config\Adapter\Ini as ConfigInt;
 
-use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
+// use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
 
 class Module implements CreateModule {
     
@@ -37,6 +37,7 @@ class Module implements CreateModule {
         $loader->registerNamespaces(array(
             ucfirst($this->moduleName) . '\Controllers'     =>  __DIR__ . '/controllers/',
             'Multiple\Components'                           =>  APPLICATION_PATH . '/' . $this->config->application->componentsDir,
+            'Multiple\Models'                               =>  APPLICATION_PATH . '/' . $this->config->application->modelsDir,
             'Multiple\Plugins'                              =>  APPLICATION_PATH . '/' . $this->config->application->pluginsDir,
         ));
         $loader->register();
@@ -115,9 +116,11 @@ class Module implements CreateModule {
             
             $eventsManager = $manager->getShared('eventsManager');
             
+            /*
             $security = new SecurityPlugin($manager);
             $security->setModule($this->moduleName);
             $eventsManager->attach('dispatch', $security);
+            */
             
             $dispatcher = new Dispatcher();
             $dispatcher->setEventsManager($eventsManager);

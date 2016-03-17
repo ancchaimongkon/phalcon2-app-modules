@@ -9,5 +9,6 @@ $loader->registerDirs(
     array(
         // เพิ่มเติม
         APPLICATION_PATH . '/' . $this->config->application->componentsDir, 
+        APPLICATION_PATH . '/' . $this->config->application->libraryDir, 
     )
 )->register();
