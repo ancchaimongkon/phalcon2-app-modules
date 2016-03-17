@@ -7,12 +7,15 @@ use Multiple\Components\CController as Controller;
 class CController extends Controller {
 
     public function initialize(){
+        
         parent::initialize();
+        
         $this->setTheme('adminlte');
         $this->setLayout('partials/main');
         
         $this->assets->collection('cssHeader')
-            ->addCss($this->getPathAssets('/vendor/bootstrap/3.3.6/dist/css/bootstrap.min.css'))
+            ->addCss($this->getPathAssets('/vendor/font-awesome/4.5.0/css/font-awesome.min.css'))
+            ->addCss($this->getPathAssets('/vendor/bootstrap/3.3.6/dist/css/bootstrap.min.css'))    
             ->addCss($this->getPathAssets('/vendor/lightcase/2.0.2/style/lightcase.min.css'))
             ->addCss($this->getPathAssets('/themes/adminlte/assets/style/AdminLTE.min.css'))
             ->addCss($this->getPathAssets('/themes/adminlte/assets/style/skins/skin-green.min.css'));
