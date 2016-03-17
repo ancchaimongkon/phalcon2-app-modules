@@ -1,28 +1,18 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html class="ie ie8" lang="en"> <![endif]-->
-<!--[if IE 9]><html class="ie ie9" lang="en"> <![endif]-->
-<!--[if gt IE 9]><!--> <html lang="en"> <!--<![endif]-->
+<html lang="en">
     <head>
-        
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        
-        <title><?php echo !empty($pageTitle) ? $pageTitle . " | " : "" ?> <?php echo $this->base->pageTitle; ?></title>
-        
+        <title><?php echo !empty($pageTitle) ? $pageTitle . " | " : "" ?> <?php echo \CBaseSystem::$pageTitle; ?></title>
         <link rel="shortcut icon" href="/public/images/favicon-32x32.ico" type="image/x-icon">
         <link rel="icon" href="/public/images/favicon-32x32.ico" type="image/x-icon">
-        
         <base href="{{ url() }}" />
         <script>var baseUrl = "{{ url() }}";</script>
-        
         {{ assets.outputCss('cssHeader') }}
         {{ assets.outputJs('jsHeader') }} 
-        
         {% block scriptHeader %} {% endblock %}
-        
     </head>
-    
     <body>
         
         {% block header %} {% endblock %}

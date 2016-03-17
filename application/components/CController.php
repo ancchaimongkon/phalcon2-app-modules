@@ -1,25 +1,31 @@
 <?php
 
 namespace Multiple\Components;
+
 use Phalcon\Mvc\Controller;
+use CBaseSystem as System;
 
 class CController extends Controller {
     
     public $pageTitle; 
 
     public function initialize(){
+        
         $this->assets->collection('cssHeader');
         $this->assets->collection('jsHeader');
         $this->assets->collection('cssFooter');
         $this->assets->collection('jsFooter');
+        
+        $this->setAssetsBase();
+        $this->setLayout('partials/main');
+        
     }
     
     /* [Auto] เรียกใช้งาน assets Manager เมื่อมีการใช้งานไฟล์ Controller */
     protected function setAssetsBase(){
         
         $this->assets->collection('cssHeader')
-            ->addCss($this->getPathAssets('/assets/cyber/style/cyber-build.css'))
-            ->addCss($this->getPathAssets('/themes/main/assets/style/theme-build.css'));
+            ->addCss($this->getPathAssets('/assets/cyber/style/cyber-build.css'));
         
         $this->assets->collection('jsFooter')
             ->addJs($this->getPathAssets('/vendor/jquery/2.1.4/jquery.min.js'));
@@ -51,7 +57,7 @@ class CController extends Controller {
     
     /* เลือก Theme */
     protected function setTheme($theme){
-        $this->view->setLayoutsDir($this->config->theme->themesDir . $this->config->theme->$theme);
+        $this->view->setLayoutsDir(sprintf('%s/%s/', $this->config->theme->themesDir, $theme)); /* ตำแหน่งเก็บไฟล์ layouts ทั้งหมด */
     }
     
     /* เลือก Layout */
@@ -61,10 +67,10 @@ class CController extends Controller {
    
     /* ปรับแต่งลิ้งค์ assets */
     protected function getPathAssets($path){
-        return $path . '?v=' . $this->base->version;
+        return $path . '?v=' . System::$version;
     }
 
-    /* เพจ error */
+    /* path error */
     protected function errorPage($code = 404, $message = 'Not Found !'){
         $this->view->statusCode = array($code,$message);
         $this->setLayout('error');

@@ -1,16 +1,13 @@
 <?php
 
 namespace Example\Controllers;
-use Multiple\Components\ControllerMain;
 
-class ExampleController extends ControllerMain {
+class ExampleController extends CController {
 
     public function initialize(){
         parent::initialize();
     }
     
-    public function indexAction(){
-
-    }
+    public function indexAction(){}
 
 }

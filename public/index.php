@@ -75,6 +75,7 @@ class Application extends WebApplication {
 if (!defined('ROOT_PATH')) {
     define('ROOT_PATH', dirname(dirname(__FILE__)));
     define('APPLICATION_PATH', ROOT_PATH . '/application');
+    define('IMAGE_PATH', ROOT_PATH . '/public/images');
 }
 
 /* ==================================================

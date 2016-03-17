@@ -43,7 +43,7 @@ class SecurityPlugin extends Plugin {
             'Admin' => array(),
             'Member' => array(),
             'Guest' => array(
-                'main' => array('index'),
+//                'main' => array('index'),
             ),
         ),
         

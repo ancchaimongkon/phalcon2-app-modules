@@ -9,7 +9,7 @@ use Phalcon\Mvc\ModuleDefinitionInterface as CreateModule;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Config\Adapter\Ini as ConfigInt;
 
-// use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
+use Multiple\Plugins\SecurityPlugin as SecurityPlugin;
 
 class Module implements CreateModule {
     
@@ -39,6 +39,7 @@ class Module implements CreateModule {
             'Multiple\Components'                           =>  APPLICATION_PATH . '/' . $this->config->application->componentsDir,
             'Multiple\Models'                               =>  APPLICATION_PATH . '/' . $this->config->application->modelsDir,
             'Multiple\Plugins'                              =>  APPLICATION_PATH . '/' . $this->config->application->pluginsDir,
+            'Multiple\Librarys'                             =>  APPLICATION_PATH . '/' . $this->config->application->libraryDir,
         ));
         $loader->register();
         
@@ -81,7 +82,7 @@ class Module implements CreateModule {
             
             $view = new View();
             $view->setViewsDir(__DIR__ . '/views/'); /* ตำแหน่งเก็บไฟล์ views ทั้งหมด */
-            $view->setLayoutsDir($this->config->theme->themesDir . $this->config->theme->$theme); /* ตำแหน่งเก็บไฟล์ layouts ทั้งหมด */
+            $view->setLayoutsDir(sprintf('%s/%s/', $this->config->theme->themesDir, $theme)); /* ตำแหน่งเก็บไฟล์ layouts ทั้งหมด */
             $view->setTemplateAfter('layouts/' . $this->layoutName); /* เลือกไฟล์ layout เริ่มต้น*/
             
             /* สร้างโฟล์เดอร์เก็บไฟล์ cache */
@@ -115,13 +116,9 @@ class Module implements CreateModule {
         $manager->set('dispatcher', function () use ($manager) {
             
             $eventsManager = $manager->getShared('eventsManager');
-            
-            /*
             $security = new SecurityPlugin($manager);
             $security->setModule($this->moduleName);
             $eventsManager->attach('dispatch', $security);
-            */
-            
             $dispatcher = new Dispatcher();
             $dispatcher->setEventsManager($eventsManager);
             $dispatcher->setDefaultNamespace(ucfirst($this->moduleName) . '\Controllers');

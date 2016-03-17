@@ -33,6 +33,11 @@ $manager->set('session', function () {
     return $session;
 });
 
+/* ดึงข้อมูล config */
+$manager->set('config', function () {
+    return $this->config;
+}, true);
+
 $manager->set('modelsMetadata', function () {
     return new MetaDataAdapter();
 });

@@ -9,19 +9,23 @@ class CBaseSystem extends Component {
      * =========================================================== */
     
     /* เวอร์ชั่นเว็บไซต์ */
-    public $version = '1.0.0';
+    public static $version = '1.0.0';
     
     /* วันที่อัพเดทเว็บไซต์ล่าสุด */
-    public $lastUpdate = '2016-02-05 13:31:00';
+    public static $lastUpdate = '2016-03-17 23:27:00';
     
     /* ชื่อหัวเว็บไซต์ */
-    public $pageTitle = 'Web Application | Phalcon Framework 2.0.10';
+    public static $pageTitle = 'Web Application | Phalcon Framework 2.0.10';
+    
+    /* ลิ้งค์เว็บไซต์ */
+    public static $baseUrl = 'http://localhost/github/drivesoftz/phalcon2-app-modules';
+    public static $urlImage = 'http://localhost/github/drivesoftz/phalcon2-app-modules/images/';
     
     /* ===========================================================
      * เปิด / ปิด ระบบ Access Control List (ACL)
      * =========================================================== */
     
-    public $securityStart       = true;
-    public $securityRealtime    = true; // อัพเดทตลอดเวลา
+    public $securityStart    = false;
+    public $securityRealtime = false; // อัพเดทตลอดเวลา
     
 }
