@@ -12,7 +12,7 @@ class CBaseSystem extends Component {
     public static $version = '1.0.0';
     
     /* วันที่อัพเดทเว็บไซต์ล่าสุด */
-    public static $lastUpdate = '2016-03-17 23:27:00';
+    public static $lastUpdate = '2016-03-18 00:38:00';
     
     /* ชื่อหัวเว็บไซต์ */
     public static $pageTitle = 'Web Application | Phalcon Framework 2.0.10';

@@ -41,6 +41,7 @@ class Module implements CreateModule {
             'Multiple\Plugins'                              =>  APPLICATION_PATH . '/' . $this->config->application->pluginsDir,
             'Multiple\Librarys'                             =>  APPLICATION_PATH . '/' . $this->config->application->libraryDir,
         ));
+        
         $loader->register();
         
         $manager->set('logger', function () {
