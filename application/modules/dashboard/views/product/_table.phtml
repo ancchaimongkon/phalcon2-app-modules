@@ -1,0 +1,46 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th width="3%"  class="text-center">#</th>    
+            <th width="10%" class="text-left">Group</th>
+            <th width="10%" class="text-left">Category</th>
+            <th width="20%" class="text-left">Name</th>
+            <th width="27%" class="text-left">Tags</th>
+            <th width="5%"  class="text-center">View</th>
+            <th width="15%" class="text-center" colspan="3"><i class="fa fa-list-ul"></i>&nbsp; Active</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if data.items is defined %}
+            {% for key, row in data.items %}
+                <tr>
+                    <td class="text-center"> {{ loop.index }} </td>
+                    <td class="text-left">{{ row.group.GroupName }}</td>
+                    <td class="text-left">{{ row.category.CategoryName }}</td>
+                    <td class="text-left">{{ row.SourceName }}</td>
+                    <td class="text-left">{{ row.SourceTags }}</td>
+                    <td class="text-center">{{ row.SourceView }}</td>
+                    <td class="text-center"> {{ link_to("/" ~ row.path ~ "/" ~ row.SourceFile ~ ".html", '<i class="fa fa-eye"></i> VIEW&nbsp;', "target":"_blank", "style" : "color:#000;") }} </td>
+                    <td class="text-center"> {{ link_to("/manager/source/edit/" ~ row.SourceID, '<i class="fa fa-edit"></i> EDIT&nbsp;', "style" : "color:#000;") }} </td>
+                    <td class="text-center"> {{ link_to("/manager/source/delete/" ~ row.SourceID, '<i class="fa fa-remove"></i> DELETE&nbsp;',"style" : "color:#000;") }} </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table> <br />
+
+{% if data.items is defined %}
+    <div class="text-center">
+        <p> หน้า {{ data.current }} / {{ data.total_pages }} | ทั้งหมด {{ data.total_items }} รายการ </p>
+    </div>
+    <div class="text-center">
+        <nav>
+            <ul class="pagination">
+                <li>{{ link_to("/manager/source", "<< หน้าแรกสุด") }}</li>
+                <li>{{ link_to("/manager/source?page=" ~ data.before, "< หน้าก่อนหน้า") }}</li>
+                <li>{{ link_to("/manager/source?page=" ~ data.next, "หน้าถัดไป >") }}</li>
+                <li>{{ link_to("/manager/source?page=" ~ data.last, "หน้าสุดท้าย >>") }}</li>
+            </ul>
+        </nav>
+    </div>
+{% endif %}
